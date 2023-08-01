@@ -15,14 +15,13 @@ import com.example.news24x7.repository.NewsRepository
 
 class NewsActivity : AppCompatActivity() {
 
-    private lateinit var binding:ActivityNewsBinding
+    private lateinit var binding: ActivityNewsBinding
     lateinit var viewModel: NewsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val newsRepository = NewsRepository(ArticleDatabase(this))
         val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(NewsViewModel::class.java)
