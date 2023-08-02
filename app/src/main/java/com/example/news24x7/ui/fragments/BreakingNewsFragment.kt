@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -45,7 +46,7 @@ class BreakingNewsFragment: Fragment() {
                 R.id.action_breakingNewsFragment_to_articleFragment,
                 bundle
             )
-            Log.i("New Tag", "Clicked here")
+//            Toast.makeText(context, "Here ", Toast.LENGTH_SHORT).show()
         }
 
         viewModel.breakingNews.observe(viewLifecycleOwner, Observer { respose->

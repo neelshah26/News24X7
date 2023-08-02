@@ -30,6 +30,7 @@ class NewsAdapter: RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
             tvTitle.text = article.title
             tvDescription.text = article.description
             tvPublishedAt.text = article.publishedAt
+
         }
     }
 
@@ -60,6 +61,9 @@ class NewsAdapter: RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
         val article = differ.currentList[position]
         holder.bind(article)
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.let { it(article) }
+        }
     }
 
     private var onItemClickListener: ((Article) -> Unit)? = null
