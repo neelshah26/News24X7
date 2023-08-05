@@ -16,15 +16,21 @@ class NewsViewModel(
 
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var breakingNewsPage: Int = 1
+    var breakingNewsResponse: NewsResponse? = null
 
     val searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var searchNewsPage: Int = 1
+    lateinit var currQuery: String
+    var prevQuery: String? = " "
+
+    var searchNewsResponse: NewsResponse? = null
 
     init {
         getBreakingNews("us")
     }
 
-    fun getSearchNews(queryWord: String) = viewModelScope.launch {
+    fun searchNews(queryWord: String) = viewModelScope.launch {
+        currQuery = queryWord
         searchNews.postValue(Resource.Loading())
         val response = newsRepository.getSearchNews(queryWord, searchNewsPage)
         searchNews.postValue(handleSearchNewsResponse(response))
@@ -38,7 +44,15 @@ class NewsViewModel(
     private fun handleBreakingNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse>{
         if(response.isSuccessful){
             response.body()?.let {resultResponse ->
-                return Resource.Success(resultResponse)
+                breakingNewsPage++
+                if(breakingNewsResponse == null){
+                    breakingNewsResponse = resultResponse
+                }else{
+                    val oldArticles = breakingNewsResponse?.articles
+                    val newArticles = resultResponse.articles
+                    oldArticles?.addAll(newArticles)
+                }
+                return Resource.Success(breakingNewsResponse?: resultResponse)
             }
         }
         return Resource.Error(response.message())
@@ -47,7 +61,20 @@ class NewsViewModel(
     private fun handleSearchNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse>{
         if(response.isSuccessful){
             response.body()?.let {resultResponse ->
-                return Resource.Success(resultResponse)
+                if(searchNewsResponse == null){
+                    searchNewsResponse = resultResponse
+                }
+                if(prevQuery != currQuery){
+                    searchNewsResponse = resultResponse
+                }
+                else{
+                    searchNewsPage++
+                    val oldArticles = searchNewsResponse?.articles
+                    val newArticles = resultResponse.articles
+                    oldArticles?.addAll(newArticles)
+                }
+                prevQuery = currQuery
+                return Resource.Success(searchNewsResponse?: resultResponse)
             }
         }
         return Resource.Error(response.message())
